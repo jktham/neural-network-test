@@ -1,6 +1,7 @@
 import random
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Network(object):
 
@@ -17,14 +18,15 @@ class Network(object):
 
     def SGD(self, training_data, epochs, mini_batch_size, eta, test_data=None):
         t0 = time.time()
-        best = 0
         training_data = list(training_data)
         n = len(training_data)
+        results = np.zeros(epochs+1, int)
 
         if test_data:
             test_data = list(test_data)
             n_test = len(test_data)
-            print(f"Initial : {self.evaluate(test_data)} / {n_test}")
+            results[0] = self.evaluate(test_data)
+            print(f"Initial : {results[0]} / {n_test}")
 
         for j in range(epochs):
             random.shuffle(training_data)
@@ -34,16 +36,17 @@ class Network(object):
                 self.update_mini_batch(mini_batch, eta)
             
             if test_data:
-                result = self.evaluate(test_data)
-                if result > best:
-                    best = result
+                results[j+1] = self.evaluate(test_data)
 
             t = round(time.time() - t0, 2)
             
             if test_data:
-                print(f"Epoch {j} : {result} / {n_test}, ({best}), {t}s")
+                print(f"Epoch {j} : {results[j+1]} / {n_test}, ({results.max()}), {t}s")
             else:
                 print(f"Epoch {j} : {t}s")
+            
+        plt.plot(results)
+        plt.show()
 
     def update_mini_batch(self, mini_batch, eta):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
