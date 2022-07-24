@@ -26,7 +26,7 @@ class Network(object):
             test_data = list(test_data)
             n_test = len(test_data)
             results[0] = self.evaluate(test_data)
-            print(f"Initial : {results[0]} / {n_test}")
+            print(f"Epoch 0 / {epochs} : {results[0]} / {n_test}")
 
         for j in range(epochs):
             random.shuffle(training_data)
@@ -41,12 +41,21 @@ class Network(object):
             t = round(time.time() - t0, 2)
             
             if test_data:
-                print(f"Epoch {j} : {results[j+1]} / {n_test}, ({results.max()}), {t}s")
+                print(f"Epoch {j+1} / {epochs} : {results[j+1]} / {n_test}, ({results.max()}), {t}s")
             else:
-                print(f"Epoch {j} : {t}s")
-            
-        plt.plot(results)
-        plt.show()
+                print(f"Epoch {j+1} / {epochs} : {t}s")
+        
+        if test_data:
+            plt.title("results")
+            plt.xlabel("epoch")
+            plt.xlim(0 - epochs/20, epochs + epochs/20)
+            plt.xticks(range(0, epochs+1, int(epochs/10)))
+            plt.ylabel("correct")
+            plt.ylim(0 - n_test/20, n_test + n_test/20)
+            plt.yticks(range(0, n_test+1, int(n_test/10)))
+            plt.axhline(results.max(), linestyle="dotted")
+            plt.plot(results)
+            plt.show()
 
     def update_mini_batch(self, mini_batch, eta):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
